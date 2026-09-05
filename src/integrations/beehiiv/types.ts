@@ -57,7 +57,12 @@ export function beehiivCursorPageSchema<T extends z.ZodTypeAny>(item: T) {
     limit: z.number(),
     has_more: z.boolean(),
     next_cursor: z.string().nullable(),
-    total_results: z.number(),
+    // Documented as required for cursor-paginated responses, but verified
+    // live against the real API: a real GET /subscriptions response with
+    // cursor pagination came back with no total_results field at all.
+    // Optional here so a real response doesn't fail to parse over a field
+    // nothing actually depends on (see ListSubscriptionsResult.totalResults).
+    total_results: z.number().optional(),
   });
 }
 

@@ -78,7 +78,8 @@ export interface ListSubscriptionsResult {
   data: BeehiivSubscription[];
   hasMore: boolean;
   nextCursor: string | null;
-  totalResults: number;
+  /** Verified live: absent on a real cursor-paginated response, despite being documented as required. */
+  totalResults: number | undefined;
 }
 
 export interface CreatePostInput {
