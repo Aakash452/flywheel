@@ -95,4 +95,20 @@ describe("parseRelevanceResponse", () => {
   it("throws on malformed JSON", () => {
     expect(() => parseRelevanceResponse("[{not json}]")).toThrow();
   });
+
+  it("recovers complete entries from a response truncated mid-object (real max_tokens cutoff behavior)", () => {
+    // Reproduces what was actually observed against real Claude output: the
+    // model hits max_tokens partway through writing the next object, so the
+    // response has no closing "]" at all.
+    const truncated =
+      '```json\n[\n  {"url": "https://a.com", "score": 15},\n  {"url": "https://b.com", "score": 42},\n  {"url": "https://c.com/long-slug-that-got-cut-off", "sco';
+    const scores = parseRelevanceResponse(truncated);
+    expect(scores.get("https://a.com")).toBe(15);
+    expect(scores.get("https://b.com")).toBe(42);
+    expect(scores.size).toBe(2);
+  });
+
+  it("still throws when truncated before any complete object", () => {
+    expect(() => parseRelevanceResponse('[\n  {"url": "https://a.com", "sco')).toThrow();
+  });
 });

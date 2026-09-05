@@ -21,11 +21,58 @@ export interface NicheConfig {
 }
 
 export const niche: NicheConfig = {
-  name: "REPLACE_ME",
+  name: "Hard Money Weekly",
+
   description:
-    "REPLACE_ME — one paragraph on what this newsletter covers and the promise it makes to a subscriber.",
-  audience: "REPLACE_ME — who reads this and why they'd open it",
-  topics: ["REPLACE_ME topic 1", "REPLACE_ME topic 2"],
-  exclude: ["REPLACE_ME adjacent topic to avoid"],
-  relevanceThreshold: 60,
+    "A weekly read on the two assets that trade on monetary distrust: gold and " +
+    "bitcoin. Each issue connects the week's macro data — real yields, Fed " +
+    "guidance, dollar strength, central bank reserve activity, ETF flows — to " +
+    "what actually moved in XAU/USD and BTC/USD, and to the levels and catalysts " +
+    "that matter next. The promise: a subscriber who reads only this can hold an " +
+    "informed view on both assets without watching screens all week. Analysis and " +
+    "scenarios, never trade calls.",
+
+  audience:
+    "Self-directed investors and part-time traders with real capital in gold, " +
+    "bitcoin, or both — typically 30–55, comfortable with terms like real yields " +
+    "and funding rates, already reading macro commentary but tired of sifting " +
+    "crypto hype and goldbug newsletters for the signal. They open it to find out " +
+    "what changed and whether their thesis still holds.",
+
+  topics: [
+    "gold price XAU/USD",
+    "bitcoin price BTC/USD",
+    "Federal Reserve policy FOMC rate decision",
+    "real yields TIPS 10-year Treasury",
+    "US dollar index DXY",
+    "CPI PCE inflation data",
+    "central bank gold purchases reserves",
+    "spot bitcoin ETF flows",
+    "gold ETF holdings GLD IAU",
+    "bitcoin on-chain supply exchange balances",
+    "crypto derivatives funding rates open interest",
+    "CFTC COT positioning precious metals",
+    "bitcoin halving supply issuance",
+    "crypto regulation SEC MiCA",
+    "safe haven demand geopolitical risk",
+    "silver platinum precious metals",
+    "bitcoin mining hashrate economics",
+    "sovereign debt currency debasement",
+  ],
+
+  exclude: [
+    "altcoin and memecoin price predictions",
+    "NFTs and web3 gaming",
+    "DeFi yield farming protocols",
+    "individual equity earnings coverage",
+    "gold jewelry and consumer retail",
+    "gold IRA and bullion dealer promotions",
+    "crypto exchange listings and airdrops",
+    "generic personal finance and budgeting",
+    "blockchain enterprise adoption",
+    "celebrity and influencer crypto commentary",
+    "technical-analysis-only chart posts with no macro thesis",
+  ],
+
+  relevanceThreshold: 65,
 };

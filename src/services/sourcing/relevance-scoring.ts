@@ -80,13 +80,31 @@ const relevanceResponseSchema = z.array(
   z.object({ url: z.string(), score: z.number().min(0).max(100) }),
 );
 
+/**
+ * Verified live against real RSS/HN content: even with a generous
+ * max_tokens, a chunk can still come back truncated mid-object (an
+ * unusually long run of URL slugs, a retry at a lower internal budget,
+ * etc.) — the response has no closing "]" because generation was cut off,
+ * not because the model produced malformed JSON. Rather than discard every
+ * score in the chunk over one incomplete trailing object, recover
+ * everything up through the last complete "}" and close the array there.
+ */
 function extractJsonArray(text: string): string {
   const start = text.indexOf("[");
-  const end = text.lastIndexOf("]");
-  if (start === -1 || end === -1 || end < start) {
+  if (start === -1) {
     throw new Error("No JSON array found in relevance-scoring response");
   }
-  return text.slice(start, end + 1);
+
+  const end = text.lastIndexOf("]");
+  if (end !== -1 && end > start) {
+    return text.slice(start, end + 1);
+  }
+
+  const lastCompleteObject = text.lastIndexOf("}");
+  if (lastCompleteObject === -1 || lastCompleteObject < start) {
+    throw new Error("No JSON array found in relevance-scoring response");
+  }
+  return `${text.slice(start, lastCompleteObject + 1)}]`;
 }
 
 /** Tolerates the model wrapping the array in prose or a code fence — extracts the first/last bracket rather than requiring an exact match. */

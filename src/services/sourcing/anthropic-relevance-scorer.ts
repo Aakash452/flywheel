@@ -81,7 +81,15 @@ export class AnthropicBatchRelevanceScorer implements RelevanceScorer {
         custom_id: `chunk-${i}`,
         params: {
           model: this.model,
-          max_tokens: 1_024,
+          // Verified live against real RSS/HN content: 1024 was too small
+          // and silently truncated the JSON array mid-object for any chunk
+          // with several long URL slugs (some real-world feed URLs run
+          // 150+ chars), which parseRelevanceResponse then rejected as "no
+          // JSON array found" — the response was never malformed, just cut
+          // off before the closing bracket. 4096 is real headroom for 20
+          // items of realistic length; unused capacity isn't billed since
+          // this only caps output, it doesn't pad it.
+          max_tokens: 4_096,
           messages: [
             { role: "user" as const, content: buildRelevancePrompt(chunk, niche) },
           ],
