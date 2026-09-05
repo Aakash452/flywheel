@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1788561373377,
+      "tag": "0000_brief_redwing",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788561382272,
+      "tag": "0001_append_only_triggers",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788563603108,
+      "tag": "0002_issues_beehiiv_post_id",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1788564876257,
+      "tag": "0003_approvals_sequence",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1788566691712,
+      "tag": "0004_sources_embedding",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788568887976,
+      "tag": "0005_issues_recipients_and_subject_candidates",
+      "breakpoints": true
+    }
+  ]
+}
