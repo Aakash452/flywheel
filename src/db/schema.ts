@@ -712,6 +712,7 @@ export const ledgerRelations = relations(ledger, ({ one }) => ({
 
 export type Ledger = typeof ledger.$inferSelect;
 export type NewLedger = typeof ledger.$inferInsert;
+export type LedgerCategory = (typeof ledgerCategoryEnum.enumValues)[number];
 
 export type Experiment = typeof experiments.$inferSelect;
 export type NewExperiment = typeof experiments.$inferInsert;
