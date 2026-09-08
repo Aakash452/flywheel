@@ -62,6 +62,22 @@
  *    because the draft generator scores 5 subject-line candidates and
  *    picks one; the other four are worth keeping for operator visibility,
  *    not discarding.
+ *
+ * 9. `experiments.target_cpa_cents` was added because the Reaper's kill
+ *    rule — "spent more than 2x target CPA with zero conversions" — needs
+ *    a target CPA to compare against, and it's a per-experiment call, not
+ *    a niche-wide constant. Nullable: experiments where a CPA target
+ *    doesn't apply just skip that kill check.
+ *
+ * 10. `creatives.kill_reason` was added because the spec says the Reaper's
+ *     kill log "becomes training data for the creative engine's priors" —
+ *     that requires the reason on the specific creative, not just its
+ *     parent experiment. `creatives.image_url` was added because Meta's ad
+ *     creative endpoints need a real rendered image, and this stack has no
+ *     image-generation model (only the Anthropic SDK for text) —
+ *     `image_prompt` is text describing what the image should be;
+ *     `image_url` is where the actual asset lives once one exists, however
+ *     it got made. Pushing a creative to Meta requires it to be set.
  */
 
 import { relations, sql } from "drizzle-orm";
@@ -221,6 +237,14 @@ export const experiments = pgTable(
     deadline: timestamp("deadline", { withTimezone: true }).notNull(),
     status: experimentStatusEnum("status").notNull().default("active"),
     killReason: text("kill_reason"),
+    // Not in the spec's literal column list. The Reaper's kill rule is
+    // "spent more than 2x target CPA with zero conversions" — that rule is
+    // meaningless without a target CPA to compare against, and it's a
+    // per-experiment call (a landing-page test and a channel test don't
+    // share one number), not a niche-wide constant. Nullable: experiment
+    // types that aren't creative_test have no CPA target, and the Reaper
+    // skips the CPA-based kill check (not the deadline check) when absent.
+    targetCpaCents: integer("target_cpa_cents"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -233,6 +257,10 @@ export const experiments = pgTable(
     index("experiments_deadline_idx").on(table.deadline),
     check("experiments_budget_cents_positive", sql`${table.budgetCents} > 0`),
     check("experiments_spent_cents_nonnegative", sql`${table.spentCents} >= 0`),
+    check(
+      "experiments_target_cpa_cents_positive",
+      sql`${table.targetCpaCents} IS NULL OR ${table.targetCpaCents} > 0`,
+    ),
     check(
       "experiments_killed_has_reason",
       sql`${table.status} <> 'killed' OR ${table.killReason} IS NOT NULL`,
@@ -259,6 +287,14 @@ export const creatives = pgTable(
     body: text("body").notNull(),
     cta: text("cta").notNull(),
     imagePrompt: text("image_prompt"),
+    // Not in the spec's literal column list. The Creative Engine generates
+    // imagePrompt as text describing what the image should be — there is
+    // no image-generation model in this stack (only the Anthropic SDK for
+    // text). imageUrl is where the actual rendered asset lives once one
+    // exists (produced by a human or a future image pipeline, out of
+    // scope here); pushing a creative to Meta requires it to be set, since
+    // Meta's ad creative endpoints need a real image, not a prompt.
+    imageUrl: text("image_url"),
     // Embedding of (angle + format + audience_framing + hook + body), used
     // by the Creative Engine's diversity gate to reject a new variant when
     // cosine similarity to any existing variant in the same experiment
@@ -267,6 +303,11 @@ export const creatives = pgTable(
     // built. Nullable because embeddings are computed after generation.
     embedding: vector("embedding", { dimensions: 1024 }),
     status: creativeStatusEnum("status").notNull().default("paused"),
+    // Not in the spec's literal column list, but the spec explicitly says
+    // the Reaper's kill log "becomes training data for the creative
+    // engine's priors" — that requires knowing *why* each specific
+    // creative was killed, not just that its parent experiment was.
+    killReason: text("kill_reason"),
     platformCreativeId: text("platform_creative_id"),
     impressions: integer("impressions").notNull().default(0),
     clicks: integer("clicks").notNull().default(0),
@@ -294,6 +335,10 @@ export const creatives = pgTable(
     check("creatives_clicks_nonnegative", sql`${table.clicks} >= 0`),
     check("creatives_signups_nonnegative", sql`${table.signups} >= 0`),
     check("creatives_spend_cents_nonnegative", sql`${table.spendCents} >= 0`),
+    check(
+      "creatives_killed_has_reason",
+      sql`${table.status} <> 'killed' OR ${table.killReason} IS NOT NULL`,
+    ),
   ],
 );
 
