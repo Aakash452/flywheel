@@ -1,4 +1,4 @@
-# Flywheel
+# Flywheel - A Moneymaker tool
 
 The intelligence layer for a paid-acquisition newsletter business: find and
 exploit a repeatable loop where $1 of ad spend produces more than $1 of
