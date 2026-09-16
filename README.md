@@ -10,6 +10,14 @@ brain on top of it: sourcing, drafting, creative testing, attribution,
 budget-killing, and allocation, all measured against one number —
 contribution margin per subscriber per month, minus blended CAC.
 
+New to the project? [PROJECT_OVERVIEW.txt](PROJECT_OVERVIEW.txt) is a
+plain-language walkthrough — what this does, the roadmap, and where things
+actually stand — no code-reading required. This file (README.md) is the
+technical reference.
+
+Licensed under the [MIT License](LICENSE) — free to use, modify, and
+self-host. See "Getting started" below to run it yourself.
+
 ## Status
 
 **All eight build-order steps are done:** schema + migrations + ledger

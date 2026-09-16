@@ -1,0 +1,248 @@
+====================================================================
+FLYWHEEL — PROJECT OVERVIEW (PLAIN-LANGUAGE VERSION)
+Last updated: 2026-09-15
+====================================================================
+
+WHAT IS THIS, IN ONE SENTENCE?
+--------------------------------------------------------------------
+Flywheel is a piece of software that runs the "business machinery"
+behind a paid newsletter — it finds things to write about, drafts the
+newsletter, tests which ads bring in the cheapest subscribers, and
+tracks whether the whole thing is making money — while a human stays
+in charge of every risky decision (nothing sends, spends, or goes
+live without a person clicking "approve").
+
+
+THE BUSINESS THIS RUNS
+--------------------------------------------------------------------
+The newsletter is called "Hard Money Weekly" — a weekly email about
+gold and bitcoin for people who already invest in one or both and
+want a quick, no-hype summary of what moved the market and why.
+
+The business model is simple in theory:
+  1. Spend $1 on Facebook/Instagram ads to get someone to subscribe.
+  2. That subscriber is worth more than $1 over time — through
+     sponsors who pay to appear in the newsletter, affiliate deals,
+     etc.
+  3. If step 2 is reliably true, spend more on ads. If it isn't,
+     stop spending and figure out why.
+
+That loop — spend money, get a subscriber, make more money than you
+spent, reinvest — is the "flywheel." The software's whole job is to
+run that loop and tell a human operator (you) whether it's actually
+spinning or not.
+
+
+WHAT THE SOFTWARE ACTUALLY DOES (THE PIPELINE)
+--------------------------------------------------------------------
+Think of it as eight jobs, each one automated but supervised:
+
+1. FIND CONTENT
+   Every 6 hours, it scans news sites, Reddit, and Hacker News for
+   articles relevant to gold/bitcoin macro news, and keeps only the
+   good ones (an AI model scores relevance 0-100).
+
+2. TRACK SUBSCRIBERS
+   It talks to Beehiiv (the email platform that actually sends the
+   newsletter and manages the subscriber list) to know who's
+   subscribed, who unsubscribed, and — importantly — WHICH AD each
+   subscriber came from, so we can tell which ads are worth the money.
+
+3. WRITE A DRAFT
+   On request, an AI model writes a full newsletter issue from the
+   best recent content it found, plus 5 possible subject lines. A
+   human reviews it on a dashboard and clicks "Approve," then "Send."
+   The software never sends anything by itself.
+
+4. THE APPROVAL DASHBOARD
+   A simple webpage (only visible on your own computer right now)
+   showing drafts to review, cash balance, and — once the business is
+   running — ad performance and recommendations. This is the "cockpit."
+
+5. MAKE AD CREATIVES
+   For a given ad-testing "experiment" (e.g. "test 3 different
+   angles for our free newsletter offer"), an AI model writes a batch
+   of different ad variations (different hooks, different angles),
+   checks they're not near-duplicates of each other, and uploads them
+   to Facebook/Instagram — but always PAUSED. A human has to click
+   "Activate" to make any ad actually spend money and go live.
+
+6. CHECK THE RECEIPTS (ATTRIBUTION)
+   Facebook will tell you "this ad got you 10 signups." This module
+   double-checks that against what Beehiiv actually recorded, to
+   catch cases where Facebook's number doesn't match reality.
+
+7. CUT LOSSES AUTOMATICALLY (THE "REAPER")
+   Every hour, it checks: has an ad spent way more than it should
+   have with zero results? Has an experiment run past its deadline?
+   If yes, it kills that ad/experiment automatically — pausing it on
+   Facebook and marking it dead — no human needs to catch it, and
+   there's no way to un-kill it (you start a new experiment instead).
+   This is the safety net that stops money bleeding out unnoticed.
+
+8. DECIDE WHERE TO SPEND NEXT (THE ALLOCATOR)
+   This is the "brain" that looks at the real numbers — how much it
+   costs to get a subscriber (CAC), how much a subscriber is worth
+   over time (LTV), how fast the business earns back what it spent
+   (payback period) — and recommends, per group of subscribers:
+      - SCALE UP 20%    → this is working well, spend more
+      - HOLD             → it's fine, don't change anything yet
+      - CUT 50%          → this isn't working, spend less and try
+                            something new
+      - HALT ALL SPENDING → the business is close to running out of
+                            cash — stop spending immediately
+   It only RECOMMENDS. A human still has to click the button to
+   actually raise a budget.
+
+
+A FEW TERMS EXPLAINED SIMPLY
+--------------------------------------------------------------------
+CAC (Customer Acquisition Cost)
+    How much it costs, on average, to get one new subscriber.
+    Example: spend $500 on ads, get 100 subscribers → CAC = $5.
+
+LTV (Lifetime Value)
+    How much money one subscriber is expected to bring in, total,
+    before they eventually unsubscribe.
+
+Payback period
+    How many days it takes for a subscriber's value to earn back
+    what it cost to acquire them. Under 30 days = great. Over 60
+    days = probably not worth it.
+
+Runway
+    At the current rate of spending, how many days until the bank
+    account hits zero. Below 21 days is treated as an emergency.
+
+The "ledger"
+    A permanent, unchangeable record of every dollar in and out
+    (ad spend, sponsor payments, AI costs, etc.) — like a bank
+    statement the software can never secretly edit or delete from.
+
+"Approval gate"
+    A rule built into the code, not just a policy: certain actions
+    (sending the newsletter, turning on an ad, raising a budget)
+    physically cannot happen unless a matching "a human approved
+    this" record exists in the database first. This is the main
+    safety mechanism of the whole project.
+
+
+GOALS OF THIS PROJECT
+--------------------------------------------------------------------
+1. Take the repetitive, data-heavy work off a solo operator's plate
+   (finding article ideas, drafting issues, generating ad variations,
+   crunching CAC/LTV numbers) so one person can run an ad-funded
+   newsletter without a team.
+2. Never let automation make an irreversible or costly mistake alone
+   — every risky action needs a human click.
+3. Make the numbers honest and visible at all times — one dashboard
+   answering "is this business actually working, and where should
+   money go next?"
+4. Build it in a way that's been actually tested against real
+   services (real database, real email platform, real AI calls) —
+   not just code that looks right on paper.
+
+
+ROADMAP — THE 8 BUILD STEPS
+--------------------------------------------------------------------
+[DONE] 1. Foundation
+        The database structure and the financial ledger. Every other
+        step depends on this.
+
+[DONE] 2. Beehiiv integration
+        Connects to the real email platform: syncs subscribers,
+        sends issues (with the approval gate), tracks open rates.
+
+[DONE] 3. Content sourcing pipeline
+        Automatically finds and scores relevant articles/posts every
+        6 hours.
+
+[DONE] 4. Draft generator + approval dashboard
+        AI writes newsletter drafts; human reviews and approves on a
+        web dashboard.
+
+[DONE] 5. Creative Engine + Facebook/Instagram integration
+        AI generates ad variations; uploads them to Meta (always
+        paused, never auto-activated).
+
+[DONE] 6. Attribution reconciliation
+        Cross-checks Facebook's reported signups against real
+        confirmed subscribers.
+
+[DONE] 7. The Reaper
+        Automatic, no-override kill switch for ads/experiments that
+        are losing money or expired.
+
+[DONE] 8. The Allocator + full dashboard
+        The recommendation engine (scale up / hold / cut / halt) and
+        the complete visual dashboard — flywheel gauge, retention
+        curves, creative leaderboard, live experiments list.
+
+All 8 steps are built, tested, and pushed to GitHub. That means the
+SOFTWARE is finished. It does NOT mean the BUSINESS is running yet —
+see the next section.
+
+
+WHERE WE ARE RIGHT NOW (BE HONEST WITH YOURSELF ABOUT THIS)
+--------------------------------------------------------------------
+- The code for all 8 steps exists, works, and has been tested — both
+  with automated tests (276 tests, all passing) and by actually
+  running it against real services (real database, real Beehiiv
+  account, real AI API calls). Several real bugs were found and
+  fixed this way.
+
+- HOWEVER, the actual newsletter business has NOT launched yet:
+    * Real subscribers so far: 1 (a test signup)
+    * Newsletter issues actually sent to anyone: 0
+    * Real ad campaigns running: 0
+    * Real revenue earned: $0
+    * Real money spent: about $0.16 (just AI testing costs)
+
+- The impressive-looking dashboard screenshot shown earlier (with
+  $28,000+ balance, growing subscriber cohorts, etc.) was generated
+  from FAKE, made-up demo data — created specifically to prove the
+  dashboard and math work correctly before trusting them with real
+  money. It is not real income.
+
+- A few real content items are still placeholders and need a human's
+  real input before the business can actually go live:
+    * The newsletter's "voice" file still has a placeholder author
+      name that an AI mistakenly treated as literal text once.
+    * Facebook/Instagram ad account details (Page ID, ad set, target
+      link) are still fill-in-the-blank placeholders — no ad account
+      has been connected yet.
+    * No sponsors have been contacted or signed.
+
+
+WHAT WOULD ACTUALLY TURN THIS ON (NEXT STEPS TO GO LIVE)
+--------------------------------------------------------------------
+1. Finish the newsletter's voice/style file (fix the placeholder
+   author name).
+2. Review and send that one drafted issue for real, to build a real
+   subscriber base — even without ads yet, e.g. via personal network,
+   social posts, etc.
+3. Decide on a real offer (free newsletter? paid tier?) and connect a
+   real Facebook/Instagram ad account so the Creative Engine has
+   somewhere real to push ads.
+4. Reach out to real sponsors once there's a real audience size worth
+   selling.
+5. Let the system run for real for a while, watch the dashboard, and
+   start trusting its CAC/LTV/payback numbers only once they're built
+   from real subscribers, not the demo data.
+
+
+WHERE TO FIND EVERYTHING
+--------------------------------------------------------------------
+Code (source of truth):
+    https://github.com/Aakash452/flywheel
+
+To view the dashboard yourself, on your own computer:
+    1. Make sure Postgres and Redis are running.
+    2. In the project folder, run:  npm run dev
+    3. Open a browser to:  http://localhost:3000
+    (It is not hosted online anywhere yet — it only runs on your
+    own machine for now.)
+
+A more technical write-up (for a developer) lives in README.md in
+the same project folder — this file is the plain-language version.
+====================================================================
